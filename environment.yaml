@@ -1,0 +1,28 @@
+name: vdmphys
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.10
+  - pytorch=2.7.0
+  - numpy
+  - torchvision
+  - diffusers
+  - transformers
+  - protobuf
+  - sentencepiece
+  - accelerate
+  - huggingface_hub
+  - imageio
+  - imageio-ffmpeg
+  - pyyaml
+  - lightning
+  - pytorch-lightning
+  - pandas
+  - opencv
+  - h5py
+  - wandb
+  - av
+  - ftfy 
+  - pip:
+    - -e . 
