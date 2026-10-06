@@ -20,7 +20,7 @@ Read below for detailed usage and the benchmarks provided in the paper:
 
 ## Usage
 
-There are three steps, all run from the repository root.
+There are four steps, all run from the repository root. The fourth is the block intervention, which uses the outputs of steps 2 and 3.
 
 ### 1. Build the dataset CSVs
 
@@ -216,3 +216,35 @@ For the other models, set the two sizes to match:
 For the baseline encoders, also use `--step 0` and pass their `--output-dir` as `--run-dir`.
 
 The results are written into the run folder as `probe_pairwise_results_step<NNNN>*.csv` (one `seed<N>/` sub-folder per seed) and `probe_regress_results_step<NNNN>.csv`, where `<NNNN>` is the step passed to `--step`. Logging to Weights & Biases is on by default; add `--no-wandb` to turn it off.
+
+### 4. Intervene on single blocks
+
+`intervention.py` measures how much each transformer block contributes to the physical signal, for Wan 2.1, CogVideoX-2b and LTX-Video. All three are text-to-video, as in step 2. For every plausible scene of an inversion run, it regenerates the video from the scene's recovered noise (`noise_latent.pt`), with the same prompt and settings as the inversion. It then regenerates the video once per block, adding noise to that block's output at every denoising step: `h + alpha * std(h) * eps`, where `std(h)` is the per-token standard deviation over features. Every video is inverted again and scored with a probe from step 3. A video's probe surprise is logit(implausible) − logit(plausible), averaged over the probe's blocks. The result for each block is the shift from the baseline video.
+
+Fig. 5 uses a probe trained on all of IntPhys at step 50. To get it, run step 3 on the run folder with `--step 50` and without `--per-class` or `--seeds`, which writes `probe_pairwise_step0050_last.ckpt` into the run folder. Example commands are as follows:
+
+```bash
+# Wan 2.1
+RUN=$OUT/wan/intphys/2026-04-16_11-53-37    # the timestamped folder written in step 2
+python intervention.py --model wan \
+  --ckpt-dir $CKPT/Wan2.1-T2V-1.3B-Diffusers --run-dir $RUN \
+  --probe-ckpt $RUN/probe_pairwise_step0050_last.ckpt --step 50 --alpha 0.5
+
+# CogVideoX-2b
+RUN=$OUT/cogvideox/intphys/2026-04-17_10-02-11
+python intervention.py --model cogvideox \
+  --ckpt-dir $CKPT/CogVideoX-2b --run-dir $RUN \
+  --probe-ckpt $RUN/probe_pairwise_step0050_last.ckpt --step 50 --alpha 0.5
+
+# LTX-Video
+RUN=$OUT/ltx/intphys/2026-04-18_09-31-47
+python intervention.py --model ltx \
+  --ckpt-dir $CKPT/LTX-Video --run-dir $RUN \
+  --probe-ckpt $RUN/probe_pairwise_step0050_last.ckpt --step 50 --alpha 0.5
+```
+
+Any other probe written by `probe_pairwise.py` on the same run folder also works, with `--step` set to the step it was trained on.
+
+The results are written into the run folder, next to the probe results, as `intervention_step<NNNN>/`: one sub-folder per scene with its `surprise.json`, then `surprise_per_scene.csv` with the shift of every block in every scene and `surprise_per_block.csv` with its average over scenes. A positive shift means that perturbing the block makes the video less plausible to the probe. Add `--save-videos` to also keep `baseline.mp4` and `block_<NN>.mp4` for each scene.
+
+Every scene needs one generation and one inversion per block, so the full run is long. To split it over several jobs, give each job `--shard i --num-shards N`. Finished scenes are skipped, so an interrupted job can be restarted. Once all jobs are done, run the command once more to write the summary over all scenes.
