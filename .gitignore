@@ -38,6 +38,7 @@ final_results/
 
 # Videos
 *.mp4
+!assets/overview.mp4
 *.mov
 *.avi
 *.mkv

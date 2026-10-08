@@ -16,6 +16,10 @@ Official implementation for *The Invisible Hand of Physics*. The codebase provid
 
 The code inverts real videos through Wan 2.1, CogVideoX and LTX-Video to recover those trajectories, saves the DiT features along the way, and trains linear probes on these features for decodability. 
 
+<p align="center"><em>A 90-second overview of the paper:</em></p>
+
+https://github.com/ParsaEsmati/videodiffusionphysics/raw/main/assets/overview.mp4
+
 Read below for detailed usage and the benchmarks provided in the paper:
 
 ## Usage
