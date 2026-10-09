@@ -18,7 +18,9 @@ The code inverts real videos through Wan 2.1, CogVideoX and LTX-Video to recover
 
 A 90-second overview of the paper:
 
-https://github.com/user-attachments/assets/8f98e561-6542-4d26-9964-09934d147872
+
+https://github.com/user-attachments/assets/0b41cf71-b8c6-4012-af8e-675a375f580a
+
 
 Read below for detailed usage and the benchmarks provided in the paper:
 
