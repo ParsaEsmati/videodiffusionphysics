@@ -12,7 +12,7 @@
 <a href="https://arxiv.org/abs/2606.05328"><img src="https://img.shields.io/badge/arXiv-2606.05328-b31b1b" alt="arXiv"></a>
 </div>
 
-Official implementation for *The Invisible Hand of Physics*. The codebase provide the full pipelines and the tools required to probe video diffusion models along the latent trajectories to investigate their score on physical plausibility, and to regress physical parameters such as initial conditions and velocity. 
+Official implementation for *The Invisible Hand of Physics*. The codebase provides the full pipelines and the tools required to probe video diffusion models along the latent trajectories to investigate their score on physical plausibility, and to regress physical parameters such as initial conditions and velocity. 
 
 The code inverts real videos through Wan 2.1, CogVideoX and LTX-Video to recover those trajectories, saves the DiT features along the way, and trains linear probes on these features for decodability.
 
